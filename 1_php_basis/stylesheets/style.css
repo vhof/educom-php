@@ -55,3 +55,7 @@ input[type="submit"] {
 input[type="text"], textarea {
     width: 400px;
 }
+
+.error {
+    color:darkred;
+}

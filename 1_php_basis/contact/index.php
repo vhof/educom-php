@@ -4,6 +4,9 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <![endif]-->
 <?php $root = $_SERVER['DOCUMENT_ROOT'];?>
+<?php 
+    require $root."/educom-php/1_php_basis/php/message_handler.php";
+?>
 <html>
     <head>
         <meta charset="utf-8">
@@ -21,14 +24,31 @@
         <?php include($root."/educom-php/1_php_basis/php/navigation.php") ?>
 
         <h1>Contact</h1>
-        <p>
-            <form action="">
-                <label for="name_input">Naam:</label><input type="text" id="name_input" name="name_input" placeholder="Naam"></input><br>
-                <label for="email_input">Email:</label><input type="text" id="email_input" name="email_input" placeholder="Email"></input><br>
-                <label for="message_input">Bericht:</label><textarea id="message_input" name="message_input" placeholder="Bericht" rows="6"></textarea><br>
-                <input type="submit" id="send_button" name="send_button" value="Verstuur">
-            </form>
-        </p>
+        <?php if (!$valid_message) { ?>
+            <p>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST">
+                    <label for="name">Naam:</label>
+                    <input type="text" id="name" name="name" placeholder="Naam" value="<?php echo $values["name"] ?>"></input>
+                    <span class="error">* <?php echo $error["name"];?></span>
+                    <br>
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" placeholder="Email" value="<?php echo $values["email"] ?>"></input>
+                    <span class="error">* <?php echo $error["email"];?></span>
+                    <br>
+                    <label for="message">Bericht:</label>
+                    <textarea id="message" name="message" placeholder="Bericht" rows="6"><?php echo $values["message"] ?></textarea>
+                    <span class="error">* <?php echo $error["message"];?></span>
+                    <br>
+                    <input type="submit" id="send_button" name="send_button" value="Verstuur">
+                </form>
+            </p>
+        <?php } else { ?>
+            <p>Naam: <?php echo $values["name"] ?></p>
+            <p>Email: <?php echo $values["email"] ?></p>
+            <p>Bericht: <?php echo $values["message"] ?></p>
+            <a href=""><button>Nieuw bericht</button></a>
+        <?php } ?>
+
         <?php include($root."/educom-php/1_php_basis/php/footer.php") ?>
         <script src="" async defer></script>
     </body>
