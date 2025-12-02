@@ -11,7 +11,7 @@
         <title>Contact</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
+        <link rel="stylesheet" href="/educom-php/1_php_basis/stylesheets/style.css">
     </head>
     <body>
         <!--[if lt IE 7]>
@@ -21,13 +21,14 @@
         <?php include($root."/educom-php/1_php_basis/php/navigation.php") ?>
 
         <h1>Contact</h1>
-        <form action="">
-            <label for="name_input">Naam:</label><input type="text" id="name_input" name="name_input" placeholder="Naam"></input><br>
-            <label for="email_input">Email:</label><input type="text" id="email_input" name="email_input" placeholder="Email"></input><br>
-            <label for="message_input">Bericht:</label><textarea id="message_input" name="message_input" placeholder="Bericht" rows="6" cols="50"></textarea><br>
-            <input type="submit" id="send_button" name="send_button" value="Verstuur">
-        </form>
-
+        <p>
+            <form action="">
+                <label for="name_input">Naam:</label><input type="text" id="name_input" name="name_input" placeholder="Naam"></input><br>
+                <label for="email_input">Email:</label><input type="text" id="email_input" name="email_input" placeholder="Email"></input><br>
+                <label for="message_input">Bericht:</label><textarea id="message_input" name="message_input" placeholder="Bericht" rows="6"></textarea><br>
+                <input type="submit" id="send_button" name="send_button" value="Verstuur">
+            </form>
+        </p>
         <?php include($root."/educom-php/1_php_basis/php/footer.php") ?>
         <script src="" async defer></script>
     </body>

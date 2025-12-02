@@ -11,7 +11,7 @@
         <title>Home</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
+        <link rel="stylesheet" href="/educom-php/1_php_basis/stylesheets/style.css">
     </head>
     <body>
         <!--[if lt IE 7]>
