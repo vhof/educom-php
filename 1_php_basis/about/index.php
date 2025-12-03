@@ -18,14 +18,14 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <?php include(__ROOT__."/educom-php/1_php_basis/php/navigation.php") ?>
+        <?php include(ROOT_STR."/educom-php/1_php_basis/php/navigation.php") ?>
 
         <h1>About</h1>
         <h2>Wie ben ik?</h2>
         <p>Ik ben Vincent!</p>
         <h2>Wat doe ik?</h2>
         <p>Naast mijn hobbies, Gamen, Zwemmen, Boulderen, Skiën, D&D, Rock & Metal Concerten bezoeken en Homelabbing, vind ik het ook leuk om te programmeren. Vandaar deze website, om te oefenen!</p>
-        <?php include(__ROOT__."/educom-php/1_php_basis/php/footer.php") ?>
+        <?php include(ROOT_STR."/educom-php/1_php_basis/php/footer.php") ?>
         <script src="" async defer></script>
     </body>
 </html>

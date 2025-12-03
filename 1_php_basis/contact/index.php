@@ -1,6 +1,6 @@
 <?php require $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php" ?>
 <?php 
-    require __ROOT__."/educom-php/1_php_basis/php/message_handler.php";
+    require ROOT_STR."/educom-php/1_php_basis/php/message_handler.php";
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -21,7 +21,7 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <?php include(__ROOT__."/educom-php/1_php_basis/php/navigation.php") ?>
+        <?php include(ROOT_STR."/educom-php/1_php_basis/php/navigation.php") ?>
 
         <h1>Contact</h1>
         <?php if (!$valid_message) { ?>
@@ -49,7 +49,7 @@
             <a href=""><button>Nieuw bericht</button></a>
         <?php } ?>
 
-        <?php include(__ROOT__."/educom-php/1_php_basis/php/footer.php") ?>
+        <?php include(ROOT_STR."/educom-php/1_php_basis/php/footer.php") ?>
         <script src="" async defer></script>
     </body>
 </html>

@@ -1,3 +1,3 @@
 <?php 
-    define("__ROOT__", $_SERVER["DOCUMENT_ROOT"])
+    define("ROOT_STR", $_SERVER["DOCUMENT_ROOT"])
 ?>

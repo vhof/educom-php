@@ -1,9 +1,9 @@
 <?php 
-    function is_empty($value) {
+    function isEmpty($value) {
         return !isset($value) || $value === "";
     }
 
-    function clean_input($data) {
+    function cleanInput($data) {
         $data = trim($data);
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
