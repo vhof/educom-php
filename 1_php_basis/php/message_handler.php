@@ -1,7 +1,5 @@
-<?php require $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php" ?>
-<?php 
-    require ROOT_STR."/educom-php/1_php_basis/php/functions.php";
-?>
+<?php require_once $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php" ?>
+<?php require_once __ROOT__."/php/functions.php"; ?>
 <?php 
     $valid_message = false;
     $fields = array("name", "email", "message");

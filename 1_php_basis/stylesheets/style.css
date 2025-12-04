@@ -23,7 +23,7 @@ ul#nav li {
     background-color: navy;
 }
 
-ul#nav li a {
+ul#nav a {
     text-decoration-line: none;
     color: white;
 }
