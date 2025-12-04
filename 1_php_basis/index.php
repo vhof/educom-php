@@ -2,15 +2,28 @@
 <?php require_once $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php" ?>
 <?php browseHappy() ?>
 <html>
-    <?php head("Home") ?>
-    <body>
-        <?php browseHappyNotifier() ?>
-        <?php navigation() ?>
+    <?php 
+        $home = "home";
+        $about = "about";
+        $contact = "contact";
 
-        <h1>Home</h1>
-        <p>Welkomstekst!</p>
+        if (isset($_GET["page"])) {
+            $page = $_GET["page"];
 
-        <?php footer() ?>
-        <script src="" async defer></script>
-    </body>
+            switch ($page) {
+                case $about:
+                    page($about);
+                    break;
+                case $contact:
+                    page($contact);
+                    break;
+                default:
+                    http_response_code(404);
+                    echo "404: Page not found";
+            }
+        }
+        else {
+            page($home);
+        }
+    ?>
 </html>
