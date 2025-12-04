@@ -18,6 +18,7 @@ ul#nav li {
     list-style-type: none;
     display: inline-block;
     padding: 5px 1em;
+    margin: 0 0.5em;
     border: 2px black solid;
     border-radius: 10px;
     background-color: navy;

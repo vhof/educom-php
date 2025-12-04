@@ -1,16 +1,45 @@
 <?php 
     require_once $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php";
+
+    //===================================
+    // Backport array_find function if PHP version < 8.4
+    //===================================
+    if (PHP_MAJOR_VERSION < 8 || PHP_MINOR_VERSION < 4) {
+        /**
+         * Porting of PHP 8.4 function
+         *
+         * @template TValue of mixed
+         * @template TKey of array-key
+         *
+         * @param array<TKey, TValue> $array
+         * @param callable(TValue $value, TKey $key): bool $callback
+         * @return ?TValue
+         *
+         * @see https://www.php.net/manual/en/function.array-find.php
+         */
+        function array_find(array $array, callable $callback): mixed
+        {
+            foreach ($array as $key => $value) {
+                if ($callback($value, $key)) {
+                    return $value;
+                }
+            }
+
+            return null;
+        }
+    }
+
     //===================================
     // Return true if $value is unset or an empty string
     //===================================
-    function isEmpty($value) {
+    function isEmpty(string $value) {
         return !isset($value) || $value === "";
     }
 
     //===================================
     // Return $data without leading or trailing whitespace, backslashes, or special HTML chars
     //===================================
-    function cleanInput($data) {
+    function cleanInput(string $data) {
         $data = trim($data);
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
@@ -43,7 +72,7 @@
     //===================================
     // Show HTML head element with $title as title
     //===================================
-    function head($title) {
+    function head(string $title) {
         echo "
             <head>
                 <meta charset='utf-8'>
@@ -60,13 +89,11 @@
     // Show page navigation
     //===================================
     function navigation() {
-        echo "
-            <ul id='nav'>
-                <a href='/educom-php/1_php_basis/'><li>HOME</li></a>
-                <a href='/educom-php/1_php_basis/?page=about'><li>ABOUT</li></a>
-                <a href='/educom-php/1_php_basis/?page=contact'><li>CONTACT</li></a>
-            </ul>
-        ";
+        echo '<ul id="nav">';
+        foreach (__PAGES__ as $page) {
+            echo '<a href="/educom-php/1_php_basis/?page='.$page.'"><li>'.strtoupper($page).'</li></a>';
+        }
+        echo '</ul>';
     }
 
     //===================================
@@ -83,7 +110,7 @@
     //===================================
     // Show page $page_name
     //===================================
-    function page($page_name) {
+    function page(callable $page_name) {
         head(ucfirst($page_name));
         echo '<body>'; 
         browseHappyNotifier(); 
@@ -151,5 +178,21 @@
                 <a href=""><button>Nieuw bericht</button></a>
             ';
         }
+    }
+
+    //===================================
+    // Load the website
+    //===================================
+    function init() {
+        browseHappy();
+        echo '<html>';
+        if (isset($_GET["page"]) && 
+            array_find(__PAGES__, function ($value) {return $_GET["page"] == $value;})) {
+            page($_GET["page"]);
+        }
+        else {
+            page(__HOME__);
+        }
+        echo '</html>';
     }
 ?>
