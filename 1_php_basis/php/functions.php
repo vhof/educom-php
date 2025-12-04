@@ -77,7 +77,7 @@
             <head>
                 <meta charset='utf-8'>
                 <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-                <title>".$title."</title>
+                <title>".ucfirst($title)."</title>
                 <meta name='description' content=''>
                 <meta name='viewport' content='width=device-width, initial-scale=1'>
                 <link rel='stylesheet' href='/educom-php/1_php_basis/stylesheets/style.css'>
@@ -111,7 +111,7 @@
     // Show page $page_name
     //===================================
     function page(callable $page_name) {
-        head(ucfirst($page_name));
+        head($page_name);
         echo '<body>'; 
         browseHappyNotifier(); 
         navigation(); 
@@ -144,39 +144,54 @@
     }
 
     //===================================
+    // Return HTML for user input as string
+    //===================================
+    function input(string $input_label, string $input_field, array $errors,): string {
+        $result = 
+            '<p>'
+            .'<label for="'.$input_label.'">'.ucfirst($input_label).':</label>'
+            .$input_field
+            .'<span class="error">* '.$errors[$input_label].'</span>'
+            .'</p>';
+        return $result;
+    }
+
+    //===================================
+    // Return HTML for text input field
+    //===================================
+    function textInput(string $input_label, array $values, array $errors): string {
+        $input_field = '<input type="text" id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'" value="'.$values[$input_label].'"></input>';
+        return input($input_label, $input_field, $errors);
+    }
+
+    //===================================
+    // Return HTML for textarea input field
+    //===================================
+    function areaInput(string $input_label, array $values, array $errors): string {
+        $input_field = '<textarea id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'">'.$values[$input_label].'</textarea>';
+        return input($input_label, $input_field, $errors);
+    }
+
+    //===================================
     // Show Contact page content
     //===================================
     function contact() {
         require __ROOT__."/php/message_handler.php";
         echo '<h1>Contact</h1>';
         if (!$valid_message) {
-            echo '
-                <p>
-                    <form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page=contact" method="POST">
-                        <label for="name">Naam:</label>
-                        <input type="text" id="name" name="name" placeholder="Naam" value="'.$values[$name_str].'"></input>
-                        <span class="error">* '.$error[$name_str].'</span>
-                        <br>
-                        <label for="email">Email:</label>
-                        <input type="text" id="email" name="email" placeholder="Email" value="'.$values[$email_str].'"></input>
-                        <span class="error">* '.$error[$email_str].'</span>
-                        <br>
-                        <label for="message">Bericht:</label>
-                        <textarea id="message" name="message" placeholder="Bericht" rows="6">'.$values[$message_str].'</textarea>
-                        <span class="error">* '.$error[$message_str].'</span>
-                        <br>
-                        <input type="submit" id="send_button" name="send_button" value="Verstuur">
-                    </form>
-                </p>
-            ';
+            echo 
+                '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page=contact" method="POST">'
+                .textInput($name_str, $values, $errors)
+                .textInput($email_str, $values, $errors)
+                .areaInput($message_str, $values, $errors)
+                .'<input type="submit" id="send_button" name="send_button" value="Send">'
+                .'</form></p>';
         }
         else {
-            echo '
-                <p>Naam: '.$values["name"].'</p>
-                <p>Email: '.$values["email"].'</p>
-                <p>Bericht: '.$values["message"].'</p>
-                <a href=""><button>Nieuw bericht</button></a>
-            ';
+            foreach ($fields as $field) {
+                echo '<p>'.ucfirst($field).': '.$values[$field].'</p>';
+            }
+            echo '<a href=""><button>Nieuw bericht</button></a>';
         }
     }
 

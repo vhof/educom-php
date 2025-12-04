@@ -6,7 +6,7 @@
     $message_str = "message";
     $fields = array($name_str, $email_str, $message_str);
     $values = array($name_str => "", $email_str => "", $message_str => "");
-    $error = array($name_str => "", $email_str => "", $message_str => "");
+    $errors = array($name_str => "", $email_str => "", $message_str => "");
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $valid_message = true;
@@ -17,14 +17,14 @@
 
         // Validate email
         if (!filter_var($values[$email_str], FILTER_VALIDATE_EMAIL)) {
-            $error[$email_str] = "Invalid email format";
+            $errors[$email_str] = "Invalid email format";
             $valid_message = false;
         }
 
         // Check empty fields
         foreach ($fields as $field) {
             if (isEmpty($values[$field])) {
-                $error[$field] = "Required field";
+                $errors[$field] = "Required field";
                 $valid_message = false;
             }
         }

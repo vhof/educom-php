@@ -46,7 +46,7 @@ label {
     display: inline-block;
     width: 60px;
     text-align: right;
-    margin: 5px 1em;
+    margin: 0 1em;
 }
 
 input[type="submit"] {
@@ -55,6 +55,10 @@ input[type="submit"] {
 
 input[type="text"], textarea {
     width: 400px;
+}
+
+form textarea {
+    height: 6em;
 }
 
 .error {
