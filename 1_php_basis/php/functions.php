@@ -3,6 +3,7 @@
 
     //===================================
     // Backport array_find function if PHP version < 8.4
+    // (could be removed as it's no longer used)
     //===================================
     if (PHP_MAJOR_VERSION < 8 || PHP_MINOR_VERSION < 4) {
         /**
@@ -90,8 +91,8 @@
     //===================================
     function navigation() {
         echo '<ul id="nav">';
-        foreach (__PAGES__ as $page) {
-            echo '<a href="/educom-php/1_php_basis/?page='.$page.'"><li>'.strtoupper($page).'</li></a>';
+        foreach (__PAGE_NAMES__ as $page => $page_name) {
+            echo '<a href="/educom-php/1_php_basis/?page='.$page.'"><li>'.strtoupper($page_name).'</li></a>';
         }
         echo '</ul>';
     }
@@ -102,45 +103,9 @@
     function footer() {
         echo "
             <div id='footer'>
-                &copy;".date('Y')."Vincent van 't Hof
+                &copy;".date('Y')."&nbsp;Vincent van 't Hof
             </div>
         ";
-    }
-
-    //===================================
-    // Show page $page_name
-    //===================================
-    function page(callable $page_name) {
-        head($page_name);
-        echo '<body>'; 
-        browseHappyNotifier(); 
-        navigation(); 
-        $page_name();
-        footer();
-        echo '</body>';
-    }
-
-    //===================================
-    // Show Home page content
-    //===================================
-    function home() {
-        echo '
-            <h1>Home</h1>
-            <p>Welkomstekst!</p>
-        '; 
-    }
-
-    //===================================
-    // Show About page content
-    //===================================
-    function about() {
-        echo '
-            <h1>About</h1>
-            <h2>Wie ben ik?</h2>
-            <p>Ik ben Vincent!</p>
-            <h2>Wat doe ik?</h2>
-            <p>Naast mijn hobbies, Gamen, Zwemmen, Boulderen, Skiën, D&D, Rock & Metal Concerten bezoeken en Homelabbing, vind ik het ook leuk om te programmeren. Vandaar deze website, om te oefenen!</p>
-        '; 
     }
 
     //===================================
@@ -173,6 +138,42 @@
     }
 
     //===================================
+    // Show page $page_name
+    //===================================
+    function page(callable $page) {
+        head(__PAGE_NAMES__[strval($page)]);
+        echo '<body>'; 
+        browseHappyNotifier(); 
+        navigation(); 
+        $page();
+        footer();
+        echo '</body>';
+    }
+
+    //===================================
+    // Show Home page content
+    //===================================
+    function home() {
+        echo '
+            <h1>Home</h1>
+            <p>Welkomstekst!</p>
+        '; 
+    }
+
+    //===================================
+    // Show About page content
+    //===================================
+    function about() {
+        echo '
+            <h1>About</h1>
+            <h2>Wie ben ik?</h2>
+            <p>Ik ben Vincent!</p>
+            <h2>Wat doe ik?</h2>
+            <p>Naast mijn hobbies, Gamen, Zwemmen, Boulderen, Skiën, D&D, Rock & Metal Concerten bezoeken en Homelabbing, vind ik het ook leuk om te programmeren. Vandaar deze website, om te oefenen!</p>
+        '; 
+    }
+
+    //===================================
     // Show Contact page content
     //===================================
     function contact() {
@@ -180,7 +181,7 @@
         echo '<h1>Contact</h1>';
         if (!$valid_message) {
             echo 
-                '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page=contact" method="POST">'
+                '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page='.__CONTACT__.'" method="POST">'
                 .textInput($name_str, $values, $errors)
                 .textInput($email_str, $values, $errors)
                 .areaInput($message_str, $values, $errors)
@@ -201,8 +202,7 @@
     function init() {
         browseHappy();
         echo '<html>';
-        if (isset($_GET["page"]) && 
-            array_find(__PAGES__, function ($value) {return $_GET["page"] == $value;})) {
+        if (isset($_GET["page"]) && in_array($_GET["page"], __PAGES__)) {
             page($_GET["page"]);
         }
         else {
