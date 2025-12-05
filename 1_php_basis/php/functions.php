@@ -179,7 +179,10 @@
     function contact() {
         require __ROOT__."/php/message_handler.php";
         echo '<h1>Contact</h1>';
-        if (!$valid_message) {
+
+        $message_rules = new RuleSet(FormRule::nonEmpty($fields));
+        $message_validator = new FormValidator($fields, $message_rules);
+        if (!$message_validator->isValid()) {
             echo 
                 '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page='.__CONTACT__.'" method="POST">'
                 .textInput($name_str, $values, $errors)

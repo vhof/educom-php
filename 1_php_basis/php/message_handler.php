@@ -59,6 +59,13 @@
             return $this->error_msg;
         }
 
+        public static function nonEmpty(array $applies_to): FormRule {
+            $condition = function (array $values, string $field_name): bool {
+                return !isEmpty($values[$field_name]);
+            };
+            return new FormRule($applies_to, $condition, "Required field");
+        }
+
         // // Validate email
         // if (!filter_var($this->values[$email_str], FILTER_VALIDATE_EMAIL)) {
         //     $this->errors[$email_str] = "Invalid email format";
@@ -118,7 +125,7 @@
         public function __construct(array $fields, RuleSet $rules){
             $this->fields = $fields;
             $this->rules = $rules;
-            foreach ($this->$fields as $field) {
+            foreach ($this->fields as $field) {
                 $this->values[$field] = $this->errors[$field] = "";
             }
             $this->is_valid = false;
