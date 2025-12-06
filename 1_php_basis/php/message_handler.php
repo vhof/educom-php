@@ -1,34 +1,6 @@
 <?php require_once $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php" ?>
 <?php 
-    $valid_message = false;
-    $name_str = "name";
-    $email_str = "email";
-    $message_str = "message";
-    $fields = array($name_str, $email_str, $message_str);
-    $values = array($name_str => "", $email_str => "", $message_str => "");
-    $errors = array($name_str => "", $email_str => "", $message_str => "");
-    
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $valid_message = true;
 
-        foreach ($fields as $field) {
-            $values[$field] = cleanInput($_POST[$field]);
-        }
-
-        // Validate email
-        if (!filter_var($values[$email_str], FILTER_VALIDATE_EMAIL)) {
-            $errors[$email_str] = "Invalid email format";
-            $valid_message = false;
-        }
-
-        // Check empty fields
-        foreach ($fields as $field) {
-            if (isEmpty($values[$field])) {
-                $errors[$field] = "Required field";
-                $valid_message = false;
-            }
-        }
-    }
 
     class FormRule {
         private array $applies_to;
@@ -47,8 +19,8 @@
             $this->error_msg = $error_msg;
         }
 
-        public function testCondition(array $values, string $field_name): bool {
-            return $this->condition->call($this, $values, $field_name);
+        public function testCondition(array $values, string ...$field_names): bool {
+            return $this->condition->call($this, $values, ...$field_names);
         }
 
         public function getAppliesTo(): array {
@@ -60,25 +32,25 @@
         }
 
         public static function nonEmpty(array $applies_to): FormRule {
-            $condition = function (array $values, string $field_name): bool {
-                return !isEmpty($values[$field_name]);
+            $condition = function (array $values, string $field): bool {
+                return !isEmpty($values[$field]);
             };
             return new FormRule($applies_to, $condition, "Required field");
         }
 
-        // // Validate email
-        // if (!filter_var($this->values[$email_str], FILTER_VALIDATE_EMAIL)) {
-        //     $this->errors[$email_str] = "Invalid email format";
-        //     $this->is_valid = false;
-        // }
+        public static function equal(array $applies_to, string $compare_to): FormRule {
+            $condition = function (array $values, string $field) use ($compare_to): bool {
+                return $values[$field] == $values[$compare_to];
+            };
+            return new FormRule($applies_to, $condition, ucfirst($compare_to)." fields must be equal");
+        }
 
-        // // Check empty fields
-        // foreach ($this->fields as $field) {
-        //     if (isEmpty($this->values[$field])) {
-        //         $this->errors[$field] = "Required field";
-        //         $this->is_valid = false;
-        //     }
-        // }
+        public static function validEmail(array $applies_to): FormRule {
+            $condition = function (array $values, string $field): bool {
+                return filter_var($values[$field], FILTER_VALIDATE_EMAIL);
+            };
+            return new FormRule($applies_to, $condition, "Not a valid E-mailaddress");
+        }
     }
 
     class RuleSet implements Iterator {
@@ -140,9 +112,9 @@
                 }
 
                 foreach ($this->rules as $rule) {
-                    foreach ($rule->getAppliesTo() as $field_name) {
-                        if (!$rule->testCondition($this->values, $field_name)) {
-                            $this->errors[$field_name] = $rule->getErrorMsg();
+                    foreach ($rule->getAppliesTo() as $field) {
+                        if (!$rule->testCondition($this->values, $field)) {
+                            $this->errors[$field] = $rule->getErrorMsg();
                             $this->is_valid = false;
                         }
                     }
@@ -162,6 +134,14 @@
             return $this->errors;
         }
 
+        public function getValue(string $field): string {
+            return $this->values[$field];
+        }
+
+        public function getError(string $field): string {
+            return $this->errors[$field];
+        }
+
         public function isValid(): bool {
             $this->validate();
             return $this->is_valid;
@@ -169,5 +149,42 @@
 
     }
 
+    abstract class FieldModel {
+        protected string $name;
+
+        public function __construct(string $name) {
+            $this->name = $name;
+        }
+
+        public function printField(string $value, string $error): void {
+            $result = 
+                '<p>'
+                .'<label for="'.$this->name.'">'.ucfirst($this->name).':</label>'
+                .$this->createField($value)
+                .'<span class="error">* '.$error.'</span>'
+                .'</p>';
+            echo $result;
+        }
+
+        abstract public function createField(string $value): string;
+    }
+
+    class TextFieldModel extends FieldModel {
+        protected string $name;
+        
+        public function createField(string $value): string {
+            return '<input type="text" id="'.$this->name.'" name="'.$this->name.'" placeholder="'.ucfirst($this->name).'" value="'.$value.'"></input>';
+        }
+    }
+
+    class AreaFieldModel extends FieldModel {
+        public function createField(string $value): string {
+            return '<textarea id="'.$this->name.'" name="'.$this->name.'" placeholder="'.ucfirst($this->name).'">'.$value.'</textarea>';
+        }
+    }
+
+    class FormModel {
+
+    }
 
 ?>

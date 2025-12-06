@@ -7,21 +7,21 @@
     defined("__SIGNUP__") || define("__SIGNUP__", "signup");
     defined("__SIGNIN__") || define("__SIGNIN__", "signin");
 
-    $pages = array(
+    $pages = [
         __HOME__,
         __ABOUT__,
         __CONTACT__,
         __SIGNUP__,
         __SIGNIN__
-    );
+    ];
 
-    $page_names = array(
+    $page_names = [
         __HOME__ => "home",
         __ABOUT__ => "about",
         __CONTACT__ => "contact",
         __SIGNUP__ => "sign up",
         __SIGNIN__ => "sign in"
-    );
+    ];
 
     defined("__PAGES__") || define("__PAGES__", $pages);
     defined("__PAGE_NAMES__") || define("__PAGE_NAMES__", $page_names);

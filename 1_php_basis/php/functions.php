@@ -111,12 +111,12 @@
     //===================================
     // Return HTML for user input as string
     //===================================
-    function input(string $input_label, string $input_field, array $errors,): string {
+    function input(string $input_label, string $input_field, string $error,): string {
         $result = 
             '<p>'
             .'<label for="'.$input_label.'">'.ucfirst($input_label).':</label>'
             .$input_field
-            .'<span class="error">* '.$errors[$input_label].'</span>'
+            .'<span class="error">* '.$error.'</span>'
             .'</p>';
         return $result;
     }
@@ -124,17 +124,17 @@
     //===================================
     // Return HTML for text input field
     //===================================
-    function textInput(string $input_label, array $values, array $errors): string {
-        $input_field = '<input type="text" id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'" value="'.$values[$input_label].'"></input>';
-        return input($input_label, $input_field, $errors);
+    function textInput(string $input_label, string $value, string $error): string {
+        $input_field = '<input type="text" id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'" value="'.$value.'"></input>';
+        return input($input_label, $input_field, $error);
     }
 
     //===================================
     // Return HTML for textarea input field
     //===================================
-    function areaInput(string $input_label, array $values, array $errors): string {
-        $input_field = '<textarea id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'">'.$values[$input_label].'</textarea>';
-        return input($input_label, $input_field, $errors);
+    function areaInput(string $input_label, string $value, string $error): string {
+        $input_field = '<textarea id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'">'.$value.'</textarea>';
+        return input($input_label, $input_field, $error);
     }
 
     //===================================
@@ -180,14 +180,27 @@
         require __ROOT__."/php/message_handler.php";
         echo '<h1>Contact</h1>';
 
-        $message_rules = new RuleSet(FormRule::nonEmpty($fields));
+        $name_str = "name";
+        $email_str = "email";
+        $message_str = "message";
+        $fields = [$name_str, $email_str, $message_str];
+
+        $message_rules = new RuleSet(
+            FormRule::nonEmpty($fields), 
+            FormRule::validEmail([$email_str])
+        );
         $message_validator = new FormValidator($fields, $message_rules);
-        if (!$message_validator->isValid()) {
+
+        $is_valid = $message_validator->isValid();
+        $values = $message_validator->getValues();
+        $errors = $message_validator->getErrors();
+
+        if (!$is_valid) {
             echo 
                 '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page='.__CONTACT__.'" method="POST">'
-                .textInput($name_str, $values, $errors)
-                .textInput($email_str, $values, $errors)
-                .areaInput($message_str, $values, $errors)
+                .textInput($name_str, $values[$name_str], $errors[$name_str])
+                .textInput($email_str, $values[$email_str], $errors[$email_str])
+                .areaInput($message_str, $values[$message_str], $errors[$message_str])
                 .'<input type="submit" id="send_button" name="send_button" value="Send">'
                 .'</form></p>';
         }
