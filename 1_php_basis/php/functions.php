@@ -183,33 +183,42 @@
         $name_str = "name";
         $email_str = "email";
         $message_str = "message";
-        $fields = [$name_str, $email_str, $message_str];
+        $field_names = [$name_str, $email_str, $message_str];
 
         $message_rules = new RuleSet(
-            FormRule::nonEmpty($fields), 
-            FormRule::validEmail([$email_str])
+            FormRule::nonEmpty($field_names), 
+            FormRule::email([$email_str])
         );
-        $message_validator = new FormValidator($fields, $message_rules);
 
-        $is_valid = $message_validator->isValid();
-        $values = $message_validator->getValues();
-        $errors = $message_validator->getErrors();
+        $fields = new FieldSet(
+            new Field($name_str, FieldType::Text),
+            new Field($email_str, FieldType::Text),
+            new Field($message_str, FieldType::Area),
+        );
 
-        if (!$is_valid) {
-            echo 
-                '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page='.__CONTACT__.'" method="POST">'
-                .textInput($name_str, $values[$name_str], $errors[$name_str])
-                .textInput($email_str, $values[$email_str], $errors[$email_str])
-                .areaInput($message_str, $values[$message_str], $errors[$message_str])
-                .'<input type="submit" id="send_button" name="send_button" value="Send">'
-                .'</form></p>';
-        }
-        else {
-            foreach ($fields as $field) {
-                echo '<p>'.ucfirst($field).': '.$values[$field].'</p>';
-            }
-            echo '<a href=""><button>Nieuw bericht</button></a>';
-        }
+        $form = new FormModel()
+
+        // $message_validator = new FormValidator($fields, $message_rules);
+
+        // $is_valid = $message_validator->isValid();
+        // $values = $message_validator->getValues();
+        // $errors = $message_validator->getErrors();
+
+        // if (!$is_valid) {
+        //     echo 
+        //         '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page='.__CONTACT__.'" method="POST">'
+        //         .textInput($name_str, $values[$name_str], $errors[$name_str])
+        //         .textInput($email_str, $values[$email_str], $errors[$email_str])
+        //         .areaInput($message_str, $values[$message_str], $errors[$message_str])
+        //         .'<input type="submit" id="send_button" name="send_button" value="Send">'
+        //         .'</form></p>';
+        // }
+        // else {
+        //     foreach ($fields as $field) {
+        //         echo '<p>'.ucfirst($field).': '.$values[$field].'</p>';
+        //     }
+        //     echo '<a href=""><button>Nieuw bericht</button></a>';
+        // }
     }
 
     //===================================
@@ -218,12 +227,7 @@
     function init() {
         browseHappy();
         echo '<html>';
-        if (isset($_GET["page"]) && in_array($_GET["page"], __PAGES__)) {
-            page($_GET["page"]);
-        }
-        else {
-            page(__HOME__);
-        }
+        page(in_array($_GET["page"], __PAGES__) ? $_GET["page"] : __HOME__);
         echo '</html>';
     }
 ?>
