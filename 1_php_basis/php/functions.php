@@ -177,7 +177,7 @@
     // Show Contact page content
     //===================================
     function contact() {
-        require __ROOT__."/php/message_handler.php";
+        require_once __ROOT__."/php/Form.php";
         echo '<h1>Contact</h1>';
 
         $name_str = "name";
@@ -185,40 +185,24 @@
         $message_str = "message";
         $field_names = [$name_str, $email_str, $message_str];
 
-        $fields = new FieldSet(
+        $contact_fields = new FieldSet(
             new Field($name_str, FieldType::Text),
             new Field($email_str, FieldType::Text),
             new Field($message_str, FieldType::Area),
         );
 
-        $message_rules = new RuleSet(
+        $contact_rules = new RuleSet(
             FormRule::nonEmpty($field_names), 
             FormRule::email([$email_str])
         );
 
-        $form = new Form($fields, $message_rules);
-
-        // $message_validator = new FormValidator($fields, $message_rules);
-
-        // $is_valid = $message_validator->isValid();
-        // $values = $message_validator->getValues();
-        // $errors = $message_validator->getErrors();
-
-        // if (!$is_valid) {
-        //     echo 
-        //         '<p><form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'?page='.__CONTACT__.'" method="POST">'
-        //         .textInput($name_str, $values[$name_str], $errors[$name_str])
-        //         .textInput($email_str, $values[$email_str], $errors[$email_str])
-        //         .areaInput($message_str, $values[$message_str], $errors[$message_str])
-        //         .'<input type="submit" id="send_button" name="send_button" value="Send">'
-        //         .'</form></p>';
-        // }
-        // else {
-        //     foreach ($fields as $field) {
-        //         echo '<p>'.ucfirst($field).': '.$values[$field].'</p>';
-        //     }
-        //     echo '<a href=""><button>Nieuw bericht</button></a>';
-        // }
+        $contact_form = new Form(
+            $contact_fields, 
+            $contact_rules, 
+            __CONTACT__
+        );
+        
+        $contact_form->draw();
     }
 
     //===================================
