@@ -185,18 +185,18 @@
         $message_str = "message";
         $field_names = [$name_str, $email_str, $message_str];
 
-        $message_rules = new RuleSet(
-            FormRule::nonEmpty($field_names), 
-            FormRule::email([$email_str])
-        );
-
         $fields = new FieldSet(
             new Field($name_str, FieldType::Text),
             new Field($email_str, FieldType::Text),
             new Field($message_str, FieldType::Area),
         );
 
-        $form = new FormModel();
+        $message_rules = new RuleSet(
+            FormRule::nonEmpty($field_names), 
+            FormRule::email([$email_str])
+        );
+
+        $form = new Form($fields, $message_rules);
 
         // $message_validator = new FormValidator($fields, $message_rules);
 
