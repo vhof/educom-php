@@ -196,7 +196,7 @@
             new Field($message_str, FieldType::Area),
         );
 
-        $form = new FormModel()
+        $form = new FormModel();
 
         // $message_validator = new FormValidator($fields, $message_rules);
 

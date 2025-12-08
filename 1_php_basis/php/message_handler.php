@@ -211,7 +211,7 @@
         public string $placeholder;
         public InputErrors $input_errors;
 
-        public function __construct(public string $name, public FieldType $field_type, public string $value = "", ?string $placeholder) {
+        public function __construct(public string $name, public FieldType $field_type, public string $value = "", ?string $placeholder = null) {
             $this->placeholder = $placeholder ?? ucfirst($name);
             $this->input_errors = new InputErrors();
         }
