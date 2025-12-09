@@ -2,34 +2,6 @@
     require_once $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php";
 
     //===================================
-    // Backport array_find function if PHP version < 8.4
-    //===================================
-    if (PHP_MAJOR_VERSION < 8 || PHP_MINOR_VERSION < 4) {
-        /**
-         * Porting of PHP 8.4 function
-         *
-         * @template TValue of mixed
-         * @template TKey of array-key
-         *
-         * @param array<TKey, TValue> $array
-         * @param callable(TValue $value, TKey $key): bool $callback
-         * @return ?TValue
-         *
-         * @see https://www.php.net/manual/en/function.array-find.php
-         */
-        function array_find(array $array, callable $callback): mixed
-        {
-            foreach ($array as $key => $value) {
-                if ($callback($value, $key)) {
-                    return $value;
-                }
-            }
-
-            return null;
-        }
-    }
-
-    //===================================
     // Return true if $value is unset or an empty string
     //===================================
     function isEmpty(string $value) {
@@ -90,8 +62,8 @@
     //===================================
     function navigation() {
         echo '<ul id="nav">';
-        foreach (__PAGES__ as $page) {
-            echo '<a href="/educom-php/1_php_basis/?page='.$page.'"><li>'.strtoupper($page).'</li></a>';
+        foreach (__PAGE_NAMES__ as $page => $page_name) {
+            echo '<a href="/educom-php/1_php_basis/?page='.$page.'"><li>'.strtoupper($page_name).'</li></a>';
         }
         echo '</ul>';
     }
@@ -105,42 +77,6 @@
                 &copy;".date('Y')."Vincent van 't Hof
             </div>
         ";
-    }
-
-    //===================================
-    // Show page $page_name
-    //===================================
-    function page(callable $page_name) {
-        head($page_name);
-        echo '<body>'; 
-        browseHappyNotifier(); 
-        navigation(); 
-        $page_name();
-        footer();
-        echo '</body>';
-    }
-
-    //===================================
-    // Show Home page content
-    //===================================
-    function home() {
-        echo '
-            <h1>Home</h1>
-            <p>Welkomstekst!</p>
-        '; 
-    }
-
-    //===================================
-    // Show About page content
-    //===================================
-    function about() {
-        echo '
-            <h1>About</h1>
-            <h2>Wie ben ik?</h2>
-            <p>Ik ben Vincent!</p>
-            <h2>Wat doe ik?</h2>
-            <p>Naast mijn hobbies, Gamen, Zwemmen, Boulderen, Skiën, D&D, Rock & Metal Concerten bezoeken en Homelabbing, vind ik het ook leuk om te programmeren. Vandaar deze website, om te oefenen!</p>
-        '; 
     }
 
     //===================================
@@ -173,6 +109,42 @@
     }
 
     //===================================
+    // Show page $page_name
+    //===================================
+    function page(callable $page) {
+        head(__PAGE_NAMES__[strval($page)]);
+        echo '<body>'; 
+        browseHappyNotifier(); 
+        navigation(); 
+        $page();
+        footer();
+        echo '</body>';
+    }
+
+    //===================================
+    // Show Home page content
+    //===================================
+    function home() {
+        echo '
+            <h1>Home</h1>
+            <p>Welkomstekst!</p>
+        '; 
+    }
+
+    //===================================
+    // Show About page content
+    //===================================
+    function about() {
+        echo '
+            <h1>About</h1>
+            <h2>Wie ben ik?</h2>
+            <p>Ik ben Vincent!</p>
+            <h2>Wat doe ik?</h2>
+            <p>Naast mijn hobbies, Gamen, Zwemmen, Boulderen, Skiën, D&D, Rock & Metal Concerten bezoeken en Homelabbing, vind ik het ook leuk om te programmeren. Vandaar deze website, om te oefenen!</p>
+        '; 
+    }
+
+    //===================================
     // Show Contact page content
     //===================================
     function contact() {
@@ -201,13 +173,7 @@
     function init() {
         browseHappy();
         echo '<html>';
-        if (isset($_GET["page"]) && 
-            array_find(__PAGES__, function ($value) {return $_GET["page"] == $value;})) {
-            page($_GET["page"]);
-        }
-        else {
-            page(__HOME__);
-        }
+        page(in_array($_GET["page"], __PAGES__) ? $_GET["page"] : __HOME__);
         echo '</html>';
     }
 ?>
