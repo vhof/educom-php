@@ -121,7 +121,7 @@
 
         protected function validateType(mixed $value): void {
             if (!$value instanceof $this->type) {
-                throw new InvalidArgumentException("Value must be $this->type");
+                throw new InvalidArgumentException(__CLASS__.": Set values must be $this->type objects");
             }
         }
 
@@ -150,9 +150,9 @@
 
     /** @extends TypedCollection<FormRule> */
     class RuleSet extends TypedCollection {
-        public function __construct(FormRule ...$items) {
+        public function __construct(FormRule ...$rules) {
             $this->type = FormRule::class;
-            $this->array = $items;
+            $this->array = $rules;
         }
     }
 
@@ -160,18 +160,17 @@
     class FieldSet extends TypedCollection {
         public function __construct(Field ...$fields) {
             $this->type = Field::class;
-            foreach ($fields as $field) {
-                $this->array[$field->name] = $field;
-            }
+            foreach ($fields as $field) { $this->array[$field->name] = $field; }
         }
 
         public function getValues(): array {
             $values = [];
-            foreach ($this as $field) {
-                $values[$field->name] = $field->value;
-            }
-            
+            foreach ($this as $field) { $values[$field->name] = $field->value; }
             return $values;
+        }
+
+        public function draw(): void {
+            foreach ($this as $field) { $field->draw(); }
         }
     }
 
@@ -205,61 +204,65 @@
         case Text;
         case Area;
 
-        public function getModel() {
+        public function getModel(Field $field) {
             return match($this) {
-                self::Text => new TextFieldModel(),
-                self::Area => new AreaFieldModel()
+                self::Text => new TextFieldModel($field),
+                self::Area => new AreaFieldModel($field)
             };
         }
     }
 
     abstract class FieldModel {
-        public function draw(Field $field): void {
+        public function __construct(protected Field $field) {}
+
+        public function draw(): void {
             $result = 
                 '<p>'
-                .'<label for="'.$field->name.'">'.ucfirst($field->name).':</label>'
-                .$this->drawInput($field)
-                .'<span class="error">* '.$field->getErrorMsg().'</span>'
+                .'<label for="'.$this->field->name.'">'.ucfirst($this->field->name).':</label>'
+                .$this->drawInput()
+                .'<span class="error">* '.$this->field->error_msg.'</span>'
                 .'</p>';
             echo $result;
         }
 
-        abstract protected function drawInput(Field $field): string;
+        abstract protected function drawInput(): string;
     }
 
     class TextFieldModel extends FieldModel {        
-        protected function drawInput(Field $field): string {
+        protected function drawInput(): string {
             return "<input 
                 type='text' 
-                id='$field->name' 
-                name='$field->name' 
-                placeholder='$field->placeholder' 
-                value='$field->value'>
+                id='".$this->field->name."' 
+                name='".$this->field->name."' 
+                placeholder='".$this->field->placeholder."' 
+                value='".$this->field->value."'>
             </input>";
         }
     }
 
     class AreaFieldModel extends FieldModel {
-        protected function drawInput(Field $field): string {
+        protected function drawInput(): string {
             return "<textarea 
-                id='$field->name' 
-                name='$field->name' 
-                placeholder='$field->placeholder'>".$field->value."</textarea>";
+                id='".$this->field->name."' 
+                name='".$this->field->name."' 
+                placeholder='".$this->field->placeholder."'>"
+                .$this->field->value
+            ."</textarea>";
         }
     }
 
     class FormModel {
-        public static function draw(Form $form): void {
-            echo '<p><form action="'.$form->action_url.'" method="POST">';
-            foreach ($form->fields as $field) {
-                $field->draw();
-            }
+        public function __construct(protected Form $form) {}
+
+        public function draw(): void {
+            echo '<p><form action="'.$this->form->action_url.'" method="POST">';
+            $this->form->fields->draw();
             echo '<input type="submit" id="send_button" name="send_button" value="Send">';
             echo '</form></p>';
         }
 
-        public static function drawResults(Form $form): void {
-            foreach ($form->fields as $field) {
+        public function drawResults(): void {
+            foreach ($this->form->fields as $field) {
                 echo '<p>'.ucfirst($field->name).': '.$field->value.'</p>';
             }
             echo '<a href=""><button>Nieuw bericht</button></a>';
@@ -268,7 +271,9 @@
 
     class Field { 
         public string $placeholder;
-        public InputErrors $input_errors;
+        private InputErrors $input_errors;
+        public string $error_msg = ""; 
+        private FieldModel $model;
 
         public function __construct(
             public readonly string $name, 
@@ -278,24 +283,24 @@
         ) {
             $this->placeholder = $placeholder ?? ucfirst($name);
             $this->input_errors = new InputErrors();
+            $this->model = $this->field_type->getModel($this);
         }
 
         public function logError(InputError $input_error): void {
             $this->input_errors->append($input_error);
-        }
-
-        public function getErrorMsg(): string {
-            return $this->input_errors->getErrorMsg();
+            $this->error_msg = $this->input_errors->getErrorMsg();
         }
 
         public function draw(): void {
-            $this->field_type->getModel()->draw($this);
+            $this->model->draw();
         }
     }
 
     class Form {
         private FormValidator $validator;
         public readonly string $action_url;
+        private FormModel $model;
+        private bool $is_valid = false;
 
         public function __construct(
             public readonly FieldSet $fields, 
@@ -304,23 +309,35 @@
         ) {
             $this->validator = new FormValidator($this);
             $this->action_url = htmlspecialchars($_SERVER["PHP_SELF"].'?page='.$action_page);
+            $this->model = new FormModel($this);
+        }
+
+        public function populate(array $values): void {
+            foreach ($values as $field_name => $field_value) {
+                $field = $this->fields[$field_name];
+                if ($this->fields[$field_name]) {
+                    // TODO Sanitizer class?
+                    $field->value = cleanInput($field_value);
+                }
+            }
+
+            $this->validate();
+        }
+
+        private function validate(): void {
+            $this->is_valid = $this->validator->isValid();
+        }
+
+        public function isValid(): bool {
+            return $this->is_valid; 
         }
 
         public function draw(): void {
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                foreach ($this->fields as $field) {
-                        $field->value = cleanInput($_POST[$field->name]);
-                    }
-            }
+            $this->model->draw();
+        }
 
-            $is_valid = $this->validator->isValid();
-
-            if (!$is_valid) {
-                FormModel::draw($this);
-            }
-            else {
-                FormModel::drawResults($this);
-            }
+        public function drawResults(): void {
+            $this->model->drawResults();
         }
     }
 

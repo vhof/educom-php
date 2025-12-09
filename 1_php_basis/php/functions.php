@@ -202,7 +202,16 @@
             __CONTACT__
         );
         
-        $contact_form->draw();
+        // TODO generalize to FormFiller or FormController class or similar
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $values = array_intersect_key($_POST, array_flip($field_names));
+            $contact_form->populate($values);
+        }
+
+        if ($contact_form->isValid()) 
+            $contact_form->drawResults();
+        else
+            $contact_form->draw();
     }
 
     //===================================
