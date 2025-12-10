@@ -1,6 +1,7 @@
 <?php 
-    namespace chapter1;
-    require_once $_SERVER['DOCUMENT_ROOT']."/educom-php/1_php_basis/php/constants.php";
+    namespace _1_php_basis;
+    require_once $_SERVER['DOCUMENT_ROOT']."/educom-php/importer.php";
+    \import(\Library::Common);
 
     //===================================
     // Show browse happy preamble
@@ -52,7 +53,7 @@
         ";
     }
 
-    function newField (string $name, string $value, callable $type, ?string $placeholder = null) {
+    function newField (string $name, string $type, string $value = "", ?string $placeholder = null) {
         return [
             "name" => $name, 
             "value" => $value,
@@ -66,12 +67,12 @@
     //===================================
     // Return HTML for user input as string
     //===================================
-    function field(string $input_label, string $input_field, array $errors,): string {
+    function field(array $field, string $field_type_model): string {
         $result = 
             '<p>'
-            .'<label for="'.$input_label.'">'.ucfirst($input_label).':</label>'
-            .$input_field
-            .'<span class="error">* '.$errors[$input_label].'</span>'
+            .'<label for="'.$field["name"].'">'.ucfirst($field["name"]).':</label>'
+            .$field_type_model
+            .'<span class="error">* '.$field["error_msg"].'</span>'
             .'</p>';
         return $result;
     }
@@ -79,17 +80,17 @@
     //===================================
     // Return HTML for text input field
     //===================================
-    function textField(string $input_label, array $values, array $errors): string {
-        $input_field = '<input type="text" id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'" value="'.$values[$input_label].'"></input>';
-        return field($input_label, $input_field, $errors);
+    function textField(array $field): string {
+        $model = '<input type="text" id="'.$field["name"].'" name="'.$field["name"].'" placeholder="'.$field["placeholder"].'" value="'.$field["value"].'"></input>';
+        return field($field, $model);
     }
 
     //===================================
     // Return HTML for textarea input field
     //===================================
-    function areaField(string $input_label, array $values, array $errors): string {
-        $input_field = '<textarea id="'.$input_label.'" name="'.$input_label.'" placeholder="'.ucfirst($input_label).'">'.$values[$input_label].'</textarea>';
-        return field($input_label, $input_field, $errors);
+    function areaField(array $field): string {
+        $model = '<textarea id="'.$field["name"].'" name="'.$field["name"].'" placeholder="'.$field["placeholder"].'">'.$field["value"].'</textarea>';
+        return field($field, $model);
     }
 
     //===================================
@@ -141,7 +142,7 @@
      * 
      * @return null Show a Form page based on $form_page
      */
-    function formModel(FormPage $form_page, array $fields) {
+    function formModel(FormPage $form_page, array $fields): string {
         $action_url = htmlspecialchars($_SERVER["PHP_SELF"]."?page=".$form_page->value);
         $result = "<p><form action='$action_url' method='POST'>";
         $fieldCallable = null;
@@ -152,6 +153,7 @@
         $result .= 
             "<input type='submit' id='send_button' name='send_button' value='Send'>"
             ."</form></p>";
+        return $result;
     }
 
     /**
@@ -175,28 +177,20 @@
     //===================================
     // Show Contact page content
     //===================================
-    function contact() {
-        require __ROOT__."/php/message_handler.php";
+    function contact(): void {
+        // require __ROOT__."/php/message_handler.php";
         $name_str = "name";
         $email_str = "email";
         $message_str = "message";
         $field_names = array($name_str, $email_str, $message_str);
 
-        $name_field = newField($name_str, "", "textField");
-        $email_field = newField($email_str, "", "textField");
-        $message_field = newField($message_str, "", "areaField");
+        $name_field = newField($name_str, __NAMESPACE__.'\\'.'textField');
+        $email_field = newField($email_str, __NAMESPACE__.'\\'.'textField');
+        $message_field = newField($message_str, __NAMESPACE__.'\\'.'areaField');
         $fields = [$name_field, $email_field, $message_field];
 
         echo '<h1>Contact</h1>';
-        if (!$is_valid) {
-            echo formModel(FormPage::Contact, $fields);
-        }
-        // else {
-        //     foreach ($fields as $field) {
-        //         echo '<p>'.ucfirst($field).': '.$values[$field].'</p>';
-        //     }
-        //     echo '<a href=""><button>Nieuw bericht</button></a>';
-        // }
+        echo formModel(FormPage::Contact, $fields);
     }
 
     //===================================
