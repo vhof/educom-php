@@ -19,6 +19,5 @@ function import(string|Library $path): void{
     foreach ($files as $file) {
         $file_path = ($is_dir ? $path . "/" : "") . $file;
         require_once $file_path;
-        echo $file_path;
     }
 }
