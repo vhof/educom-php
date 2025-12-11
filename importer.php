@@ -11,17 +11,14 @@ enum Library: string {
  * @param string|Library $path directory or file path, or Library
  * @return void
  */
-function import(string|Library $path){
+function import(string|Library $path): void{
     $path = $path instanceof Library ? $path->value : $path;
     $is_dir = is_dir($path);
     $files = $is_dir ? scandir($path) : [$path];
     $files = array_filter($files, fn($file) => substr($file, -4) == ".php");
-    echo $path . ": <br>";
     foreach ($files as $file) {
         $file_path = ($is_dir ? $path . "/" : "") . $file;
         require_once $file_path;
-        echo "Loaded \"";
         echo $file_path;
-        echo "\"<br>";
     }
 }
