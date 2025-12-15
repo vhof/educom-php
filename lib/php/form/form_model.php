@@ -2,20 +2,20 @@
 
 /**
  * @param array<array{
- *      name: string, 
- *      value: string,
- *      type: callable,
- *      rules: array<callable>,
- *      error_msg: string,
- *      placeholder?: string,
+ *      NAME_KEY: string, 
+ *      TYPE_KEY: string,
+ *      VALUE_KEY: callable,
+ *      ERRORS_KEY: array,
+ *      PLACEHOLDER_KEY: string,
+ *      IS_VALID_KEY: bool,
  * }>  $fields
  * 
  * @return string Produce a Form based on $fields
  */
-function formModel(string $action_url, array $fields): string {
-    $result = "<p><form action='$action_url' method='POST'>";
-    foreach ($fields as $field) {
-        $result .= $field["type"]($field);
+function formModel(array $form): string {
+    $result = "<p><form action=".$form[ACTION_KEY]." method='POST'>";
+    foreach ($form[FIELDS_KEY] as $field) {
+        $result .= $field[TYPE_KEY]($field);
     }
     $result .= 
         "<input type='submit' id='send_button' name='send_button' value='Send'>"

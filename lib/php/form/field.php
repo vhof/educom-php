@@ -7,23 +7,23 @@
  * @param string $value
  * @param ?string $placeholder
  * @return array{
- *      name: string, 
- *      type: callable, 
- *      value: string,
- *      rules: array, 
- *      error_msg: string, 
- *      placeholder: string, 
+ *      NAME_KEY: string, 
+ *      TYPE_KEY: callable, 
+ *      VALUE_KEY: string,
+ *      ERRORS_KEY: array, 
+ *      PLACEHOLDER_KEY: string, 
+ *      IS_VALID_KEY: bool,
  * } Field
  */
 function newField(string $name, string $type, string $value = "", ?string $placeholder = null): array {
     if (!is_callable($type)) throw new \InvalidArgumentException("type must be callable");
     return [
-        "name" => $name, 
-        "value" => $value,
-        "type" => $type,
-        "rules" => [],
-        "error_msg" => "",
-        "placeholder" => $placeholder ?? ucfirst($name),
+        NAME_KEY => $name, 
+        TYPE_KEY => $type,
+        VALUE_KEY => $value,
+        ERRORS_KEY => [],
+        PLACEHOLDER_KEY => $placeholder ?? \lib\displayName($name),
+        IS_VALID_KEY => true,
     ];
 }
 
@@ -31,13 +31,13 @@ function newField(string $name, string $type, string $value = "", ?string $place
  * Returns an array of blank Field structs based on $field_data
  * @param array $field_data
  * @return array{
- *      name: array{
- *          name: string, 
- *          type: callable, 
- *          value: string,
- *          rules: array, 
- *          error_msg: string, 
- *          placeholder: string, 
+ *      NAME_KEY: array{
+ *          NAME_KEY: string, 
+ *          TYPE_KEY: callable, 
+ *          VALUE_KEY: string,
+ *          ERRORS_KEY: array, 
+ *          PLACEHOLDER_KEY: string, 
+ *          IS_VALID_KEY: bool,
  *      }
  * }
  */

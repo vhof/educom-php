@@ -6,9 +6,9 @@
 function fieldModel(array $field, string $field_type_model): string {
     $result = 
         '<p>'
-        .'<label for="'.$field["name"].'">'.ucfirst($field["name"]).':</label>'
+        .'<label for="'.$field[NAME_KEY].'">'.\lib\displayName($field[NAME_KEY]).':</label>'
         .$field_type_model
-        .'<span class="error">* '.$field["error_msg"].'</span>'
+        .'<span class="error">* '.getErrorMsg($field).'</span>'
         .'</p>';
     return $result;
 }
@@ -17,7 +17,7 @@ function fieldModel(array $field, string $field_type_model): string {
 // Return HTML for text input field
 //===================================
 function textFieldModel(array $field): string {
-    $model = '<input type="text" id="'.$field["name"].'" name="'.$field["name"].'" placeholder="'.$field["placeholder"].'" value="'.$field["value"].'"></input>';
+    $model = '<input type="text" id="'.$field[NAME_KEY].'" name="'.$field[NAME_KEY].'" placeholder="'.$field[PLACEHOLDER_KEY].'" value="'.$field[VALUE_KEY].'"></input>';
     return fieldModel($field, $model);
 }
 
@@ -25,10 +25,6 @@ function textFieldModel(array $field): string {
 // Return HTML for area input field
 //===================================
 function areaFieldModel(array $field): string {
-    $model = '<textarea id="'.$field["name"].'" name="'.$field["name"].'" placeholder="'.$field["placeholder"].'">'.$field["value"].'</textarea>';
+    $model = '<textarea id="'.$field[NAME_KEY].'" name="'.$field[NAME_KEY].'" placeholder="'.$field[PLACEHOLDER_KEY].'">'.$field[VALUE_KEY].'</textarea>';
     return fieldModel($field, $model);
 }
-
-const NS = __NAMESPACE__.'\\';
-const TEXTFIELD_CALLABLE = NS."textFieldModel";
-const AREAFIELD_CALLABLE = NS."areaFieldModel";

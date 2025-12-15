@@ -30,15 +30,23 @@ function about(): void {
 function contact(): void {
     \import(\Library::Form);
 
+    $name_str = "name";
+    $email_str = "email";
+    $message_str = "message";
+    $field_names = [$name_str, $email_str, $message_str];
+
     $field_data = [
-        ["name", form\TEXTFIELD_CALLABLE],
-        ["email", form\TEXTFIELD_CALLABLE],
-        ["message", form\AREAFIELD_CALLABLE],
+        [$name_str, form\TEXTFIELD_CALLABLE],
+        [$email_str, form\TEXTFIELD_CALLABLE],
+        [$message_str, form\AREAFIELD_CALLABLE],
     ];
 
-    $fields = form\newFields($field_data);
+    $rules = [
+        form\newNonEmptyRule($field_names),
+        form\newEmailRule($email_str),
+    ];
 
-    form\formPage(FormPage::Contact->value, $fields);
+    form\formPage(FormPage::Contact->value, $field_data, $rules);
 }
 
 //===================================
@@ -47,15 +55,25 @@ function contact(): void {
 function signUp(): void {
     \import(\Library::Form);
 
+    $name_str = "name";
+    $email_str = "email";
+    $password_str = "password";
+    $confirm_pwd_str = "confirm_password";
+    $field_names = [$name_str, $email_str, $password_str, $confirm_pwd_str];
+
     $field_data = [
-        ["email", form\TEXTFIELD_CALLABLE],
-        ["password", form\TEXTFIELD_CALLABLE],
-        ["confirm_password", form\TEXTFIELD_CALLABLE],
+        [$name_str, form\TEXTFIELD_CALLABLE],
+        [$email_str, form\TEXTFIELD_CALLABLE],
+        [$password_str, form\TEXTFIELD_CALLABLE],
+        [$confirm_pwd_str, form\TEXTFIELD_CALLABLE],
     ];
 
-    $fields = form\newFields($field_data);
+    $rules = [
+        form\newNonEmptyRule($field_names),
+        form\newEqualityRule([$password_str, $confirm_pwd_str]),
+    ];
 
-    form\formPage(FormPage::Signup->value, $fields);
+    form\formPage(FormPage::Signup->value, $field_data, $rules);
 }
 
 //===================================
@@ -69,7 +87,9 @@ function signIn(): void {
         ["password", form\TEXTFIELD_CALLABLE],
     ];
 
-    $fields = form\newFields($field_data);
+    $rules = [
 
-    form\formPage(FormPage::Signin->value, $fields);
+    ];
+
+    form\formPage(FormPage::Signin->value, $field_data, $rules);
 }

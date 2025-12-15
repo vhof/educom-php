@@ -25,6 +25,20 @@ function callableFromName(string $name, string $namespace = "\\"): string {
     return $namespace."\\".lcfirst(str_replace("_","",ucwords($name,"_")));
 }
 
+/** 
+ * Backport from PHP 8.4 
+ * @ref https://www.php.net/manual/en/function.array-all.php
+ */
+if (!function_exists('array_all')) {
+    function array_all(array $array, callable $callable) {
+        foreach ($array as $key => $value) {
+            if (!$callable($value, $key))
+                return false;
+        }
+        return true;
+    }
+}
+
 function getPage(string $default_page_name, array $page_names): string {
     $url_page = $_GET["page"] ?? $default_page_name;
     $page_name = array_search($url_page, $page_names) ? $url_page : $default_page_name;
