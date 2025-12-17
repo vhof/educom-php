@@ -7,7 +7,7 @@ function validateRule(array &$fields, array $rule): void {
         if (\is_callable($ruleCallable))
             $satisfied = $ruleCallable($rule, $fields, $field_name);
         else
-            throw new \InvalidArgumentException($ruleCallable." should be callable with signature (array \$rule, array \$fields, string \$field_name): bool");
+            throw new \InvalidArgumentException($ruleCallable." should be callable with signature (array \$rule, array &\$fields, string \$curr_field_name): bool");
         
         if (!$satisfied) {
             $fields[$field_name][ERRORS_KEY][] = $rule[ERROR_KEY];
@@ -19,7 +19,7 @@ function validateRule(array &$fields, array $rule): void {
 
 /**
  * Validate each field according to its given rules
- * @param array $form
+ * @param array &$form
  * @return void
  */
 function validateForm(array &$form): void {
@@ -28,6 +28,7 @@ function validateForm(array &$form): void {
     $form[IS_VALID_KEY] = isValidForm($form);
 }
 
-function isValidForm(array $form): bool {
-    return \lib\array_all($form[FIELDS_KEY], fn($field) => $field[IS_VALID_KEY]);
+function isValidForm(array &$form): bool {
+    return \lib\array_all($form[FIELDS_KEY], fn($field) => $field[IS_VALID_KEY])
+            && !$form[ERROR_MSG_KEY];
 }

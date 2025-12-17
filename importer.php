@@ -4,6 +4,7 @@ defined("__ROOT__") || define("__ROOT__", $_SERVER["DOCUMENT_ROOT"]);
 enum Library: string {
     case Common = __ROOT__."/educom-php/lib/php/common";
     case Form = __ROOT__."/educom-php/lib/php/form";
+    case Account = __ROOT__."/educom-php/lib/php/account";
 }
 
 /**

@@ -1,5 +1,7 @@
 <?php namespace _1_php_basis;
+use Library;
 use lib\form;
+use lib\account;
 
 //===================================
 // Show Home page content
@@ -24,72 +26,122 @@ function about(): void {
     '; 
 }
 
+function formPage(Page $page, array $field_data, array $rules, string $submit_text, string $error_msg): void {
+    form\loadForm($page->value, \lib\responseCallableFromName($page->value, __NAMESPACE__), $field_data, $rules, $submit_text, $error_msg);
+}
+
 //===================================
 // Show Contact page content
 //===================================
-function contact(): void {
-    \import(\Library::Form);
+function contact(string $error_msg = ""): void {
+    \import(Library::Form);
 
-    $name_str = "name";
-    $email_str = "email";
-    $message_str = "message";
-    $field_names = [$name_str, $email_str, $message_str];
+    $field_keys = [NAME_KEY, EMAIL_KEY, MESSAGE_KEY];
 
     $field_data = [
-        [$name_str, form\TEXTFIELD_CALLABLE],
-        [$email_str, form\TEXTFIELD_CALLABLE],
-        [$message_str, form\AREAFIELD_CALLABLE],
+        [NAME_KEY   , form\TEXTFIELD_CALLABLE],
+        [EMAIL_KEY  , form\TEXTFIELD_CALLABLE],
+        [MESSAGE_KEY, form\AREAFIELD_CALLABLE],
     ];
 
     $rules = [
-        form\newNonEmptyRule($field_names),
-        form\newEmailRule($email_str),
+        form\newNonEmptyRule($field_keys),
+        form\newEmailRule(EMAIL_KEY),
     ];
 
-    form\formPage(FormPage::Contact->value, $field_data, $rules);
+    formPage(Page::Contact, $field_data, $rules, "Send message", $error_msg);
 }
 
 //===================================
 // Show Sign up page content
 //===================================
-function signUp(): void {
-    \import(\Library::Form);
+function signUp(string $error_msg = ""): void {
+    \import(Library::Form);
 
-    $name_str = "name";
-    $email_str = "email";
-    $password_str = "password";
-    $confirm_pwd_str = "confirm_password";
-    $field_names = [$name_str, $email_str, $password_str, $confirm_pwd_str];
+    $field_keys = [NAME_KEY, EMAIL_KEY, PASSWORD_KEY, CONFIRM_PWD_KEY];
 
     $field_data = [
-        [$name_str, form\TEXTFIELD_CALLABLE],
-        [$email_str, form\TEXTFIELD_CALLABLE],
-        [$password_str, form\TEXTFIELD_CALLABLE],
-        [$confirm_pwd_str, form\TEXTFIELD_CALLABLE],
+        [NAME_KEY       , form\TEXTFIELD_CALLABLE],
+        [EMAIL_KEY      , form\TEXTFIELD_CALLABLE],
+        [PASSWORD_KEY   , form\TEXTFIELD_CALLABLE],
+        [CONFIRM_PWD_KEY, form\TEXTFIELD_CALLABLE],
     ];
 
     $rules = [
-        form\newNonEmptyRule($field_names),
-        form\newEqualityRule([$password_str, $confirm_pwd_str]),
+        form\newNonEmptyRule($field_keys),
+        form\newEmailRule(EMAIL_KEY),
+        form\newEqualityRule([PASSWORD_KEY, CONFIRM_PWD_KEY]),
     ];
 
-    form\formPage(FormPage::Signup->value, $field_data, $rules);
+    formPage(Page::Signup, $field_data, $rules, \lib\displayName(Page::Signup->value), $error_msg);
 }
 
 //===================================
 // Show Sign in page content
 //===================================
-function signIn(): void {
-    \import(\Library::Form);
+function signIn(string $error_msg = ""): void {
+    \import(Library::Form);
+
+    $field_keys = [EMAIL_KEY, PASSWORD_KEY];
 
     $field_data = [
-        ["email", form\TEXTFIELD_CALLABLE],
-        ["password", form\TEXTFIELD_CALLABLE],
+        [EMAIL_KEY      , form\TEXTFIELD_CALLABLE],
+        [PASSWORD_KEY   , form\TEXTFIELD_CALLABLE],
     ];
 
     $rules = [
-
+        form\newNonEmptyRule($field_keys),
+        form\newEmailRule(EMAIL_KEY),
     ];
 
-    form\formPage(FormPage::Signin->value, $field_data, $rules);
+    formPage(Page::Signin, $field_data, $rules, \lib\displayName(Page::Signin->value), $error_msg);
+}
+
+function signOut(): void {
+    \import(Library::Account);
+
+    account\signOut();
+
+    // redirect to Home
+}
+
+function contactResponse(array &$form): void {
+    foreach ($form[form\FIELDS_KEY] as $field) 
+        echo '<p>'.\lib\displayName($field[form\NAME_KEY]).': '.$field[form\VALUE_KEY].'</p>';
+    echo '<a href=""><button>New message</button></a>';
+}
+
+function signUpResponse(array &$form): void {
+    \import(Library::Account);
+
+    [   EMAIL_KEY       => $email,
+        NAME_KEY        => $name,
+        PASSWORD_KEY    => $pwd,
+    ] = form\getValues($form);
+
+    $user = account\signUp($email, $name, $pwd);
+
+    if ($user) 
+        signInResponse($form);
+    else 
+        signUp("User already exists");
+}
+
+function signInResponse(array &$form): void {
+    \import(Library::Account);
+
+    [   EMAIL_KEY       => $email,
+        PASSWORD_KEY    => $pwd,
+    ] = form\getValues($form);
+
+    $sign_in = account\signIn($email, $pwd);
+
+    if ($sign_in instanceof account\SignInError)
+        signIn($sign_in->value);
+    elseif (!$sign_in)
+        signIn("Sign in failed for unkown reason");
+    else {
+        header("Location: ". htmlspecialchars($_SERVER["PHP_SELF"]."?page=".__HOME_PAGE__->value));
+        exit();
+    }
 }

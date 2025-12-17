@@ -17,21 +17,25 @@ const APPLIES_TO_KEY = "applies_to";
 const ERROR_KEY = "error";
 
 // Form
+const TITLE_KEY = "title";
 const FIELDS_KEY = "fields";
 const RULES_KEY = "rules";
 const ACTION_KEY = "action_url";
+const SUBMIT_TEXT_KEY = "submit_text";
+const ERROR_MSG_KEY = "error_message";
+
 
 // Standard input field types
-const TEXTFIELD_CALLABLE = NS."textFieldModel";
-const AREAFIELD_CALLABLE = NS."areaFieldModel";
+const TEXTFIELD_CALLABLE = NS."textfieldView";
+const AREAFIELD_CALLABLE = NS."areafieldView";
 
-// Standard rule callables
+// Standard rules & errors
 const NONEMPTY_RULE_CALLABLE = NS."nonEmptyRule";
 const EMAIL_RULE_CALLABLE = NS."emailRule";
 const EQUALITY_RULE_CALLABLE = NS."equalityRule";
 
 const PRECEDENCE_KEY = "precedence";
-const ERROR_MSG_KEY = "message";
+// const ERROR_MSG_KEY = "error_message";
 
 const NONEMPTY_ERROR = [
     PRECEDENCE_KEY => 0,

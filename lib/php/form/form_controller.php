@@ -12,10 +12,11 @@
  * 
  * Show a Form page based on $fields
  */
-function formPage(string $page_name, array $field_data, array $rules): void {
+function loadForm(string $page_name, string $responseCallable, array $field_data, array $rules, string $submit_text, string $error_msg): void {
+    $title = \lib\displayName($page_name);
     $action_url = htmlspecialchars($_SERVER["PHP_SELF"]."?page=".$page_name);
     $fields = newFields($field_data);
-    $form = newForm($fields, $rules, $action_url);
+    $form = newForm($title, $fields, $rules, $action_url, $submit_text, $error_msg);
 
     $is_valid = false;
 
@@ -26,12 +27,8 @@ function formPage(string $page_name, array $field_data, array $rules): void {
         $is_valid = $form[IS_VALID_KEY];
     }
 
-    echo "<h1>".\lib\displayName($page_name)."</h1>";
-
     if ($is_valid) 
-        loadFormResponse($form);
+        $responseCallable($form);
     else
-        loadForm($form);
-
-
+        drawForm($form);
 }

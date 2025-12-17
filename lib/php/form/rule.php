@@ -1,27 +1,11 @@
 <?php namespace lib\form;
 
-use function lib\isEmpty;
-
-enum InputErrorType {
-    case NonEmpty;
-    case Email;
-    case Equality;
-    
-    public function precedence(): int {
-        return match($this) {
-            self::NonEmpty => 0,
-            self::Email => 1,
-            self::Equality => 2,
-        };
-    }
-}
-
 function nonEmptyRule(array $rule, array &$fields, string $curr_field_name): bool {
-    return !isEmpty($fields[$curr_field_name][VALUE_KEY]);    
+    return !\lib\isEmpty($fields[$curr_field_name][VALUE_KEY]);    
 }
 
 function emailRule(array $rule, array &$fields, string $curr_field_name): bool {
-    return filter_var($fields[$curr_field_name][VALUE_KEY], FILTER_VALIDATE_EMAIL);    
+    return \filter_var($fields[$curr_field_name][VALUE_KEY], FILTER_VALIDATE_EMAIL);    
 }
 
 function equalityRule(array $rule, array &$fields, string $curr_field_name): bool {

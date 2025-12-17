@@ -25,6 +25,10 @@ function callableFromName(string $name, string $namespace = "\\"): string {
     return $namespace."\\".lcfirst(str_replace("_","",ucwords($name,"_")));
 }
 
+function responseCallableFromName(string $name, string $namespace = "\\"): string {
+    return callableFromName($name, $namespace)."Response";
+}
+
 /** 
  * Backport from PHP 8.4 
  * @ref https://www.php.net/manual/en/function.array-all.php
@@ -48,7 +52,10 @@ function getPage(string $default_page_name, array $page_names): string {
 //===================================
 // Show page $page
 //===================================
-function loadPage(string $page_name, array $page_names, string $namespace): void {
+function loadPage(string $page_name, array $session_page_names, array $non_session_page_names, string $namespace): void {
+    $page_names = $non_session_page_names;
+    if (session_status() == PHP_SESSION_ACTIVE)
+        $page_names = $session_page_names;
     echo browseHappy();
     echo '<html>';
     echo head($page_name);

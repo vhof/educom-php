@@ -1,30 +1,49 @@
 <?php namespace lib\form;
 
-//===================================
-// Return HTML for user input as string
-//===================================
-function fieldModel(array $field, string $field_type_model): string {
-    $result = 
-        '<p>'
-        .'<label for="'.$field[NAME_KEY].'">'.\lib\displayName($field[NAME_KEY]).':</label>'
-        .$field_type_model
-        .'<span class="error">* '.getErrorMsg($field).'</span>'
-        .'</p>';
-    return $result;
+/**
+ * Returns a blank Field struct
+ * @param string $name
+ * @param callable $type
+ * @param string $value
+ * @param ?string $placeholder
+ * @return array{
+ *      NAME_KEY: string, 
+ *      TYPE_KEY: callable, 
+ *      VALUE_KEY: string,
+ *      ERRORS_KEY: array, 
+ *      PLACEHOLDER_KEY: string, 
+ *      IS_VALID_KEY: bool,
+ * } Field
+ */
+function newField(string $name, string $type, string $value = "", ?string $placeholder = null): array {
+    if (!is_callable($type)) throw new \InvalidArgumentException("type must be callable");
+    return [
+        NAME_KEY => $name, 
+        TYPE_KEY => $type,
+        VALUE_KEY => $value,
+        ERRORS_KEY => [],
+        PLACEHOLDER_KEY => $placeholder ?? \lib\displayName($name),
+        IS_VALID_KEY => true,
+    ];
 }
 
-//===================================
-// Return HTML for text input field
-//===================================
-function textFieldModel(array $field): string {
-    $model = '<input type="text" id="'.$field[NAME_KEY].'" name="'.$field[NAME_KEY].'" placeholder="'.$field[PLACEHOLDER_KEY].'" value="'.$field[VALUE_KEY].'"></input>';
-    return fieldModel($field, $model);
-}
-
-//===================================
-// Return HTML for area input field
-//===================================
-function areaFieldModel(array $field): string {
-    $model = '<textarea id="'.$field[NAME_KEY].'" name="'.$field[NAME_KEY].'" placeholder="'.$field[PLACEHOLDER_KEY].'">'.$field[VALUE_KEY].'</textarea>';
-    return fieldModel($field, $model);
+/**
+ * Returns an array of blank Field structs based on $field_data
+ * @param array $field_data
+ * @return array{
+ *      NAME_KEY: array{
+ *          NAME_KEY: string, 
+ *          TYPE_KEY: callable, 
+ *          VALUE_KEY: string,
+ *          ERRORS_KEY: array, 
+ *          PLACEHOLDER_KEY: string, 
+ *          IS_VALID_KEY: bool,
+ *      }
+ * }
+ */
+function newFields(array $field_data): array {
+    $fields = [];
+    foreach ($field_data as [$name, $type])
+        $fields[$name] = newField($name, $type);
+    return $fields;
 }

@@ -5,5 +5,5 @@
 //===================================
 function init(): void {
     $page_name = \lib\getPage(__HOME_PAGE__->value, Page::values());
-    \lib\loadPage($page_name, Page::values(), __NAMESPACE__);
+    \lib\loadPage($page_name, Page::sessionPages(), Page::nonSessionPages(), __NAMESPACE__);
 }
