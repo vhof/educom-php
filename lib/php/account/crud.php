@@ -18,7 +18,7 @@ function readUser(string $email): array|bool {
             break;
         }
     }
-    fclose($userFile);
+    if (!closeConnection($userFile)) return false;
     return $found_user;
 }
 
