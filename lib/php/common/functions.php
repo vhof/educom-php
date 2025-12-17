@@ -44,7 +44,7 @@ if (!function_exists('array_all')) {
 }
 
 function getPage(string $default_page_name, array $page_names): string {
-    $url_page = $_GET["page"] ?? $default_page_name;
+    $url_page = $_GET[PAGE_KEY] ?? $default_page_name;
     $page_name = array_search($url_page, $page_names) ? $url_page : $default_page_name;
     return $page_name;
 }
@@ -52,10 +52,10 @@ function getPage(string $default_page_name, array $page_names): string {
 //===================================
 // Show page $page
 //===================================
-function loadPage(string $page_name, array $session_page_names, array $non_session_page_names, string $namespace): void {
-    $page_names = $non_session_page_names;
-    if (session_status() == PHP_SESSION_ACTIVE)
-        $page_names = $session_page_names;
+function loadPage(string $page_name, array $page_names, string $namespace): void {
+    $_SESSION[RETURN_PAGE_KEY] = $_SESSION[PAGE_KEY] ?? $page_name;
+    $_SESSION[PAGE_KEY] = $page_name;
+
     echo browseHappy();
     echo '<html>';
     echo head($page_name);

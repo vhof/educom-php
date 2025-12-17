@@ -17,6 +17,10 @@ function serializeUser(array &$user): string {
 }
 
 function unserializeUser(string $data): array {
-    [$email, $name, $pwd] = \sscanf($data, "%[^|]|%[^|]|%[^\n]");
+    [$email, $name, $pwd] = \sscanf($data, "%[^|]|%[^|]|%s");
     return newUser($email, $pwd, $name);
+}
+
+function getUserName(array &$user): string {
+    return $user[USER_NAME_KEY];
 }

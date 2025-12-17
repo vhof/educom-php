@@ -43,7 +43,12 @@ function newField(string $name, string $type, string $value = "", ?string $place
  */
 function newFields(array $field_data): array {
     $fields = [];
-    foreach ($field_data as [$name, $type])
-        $fields[$name] = newField($name, $type);
+    foreach ($field_data as $field_datum) {
+        $default_value = "";
+        \count($field_datum) == 3
+        ? [$name, $type, $default_value] = $field_datum
+        : [$name, $type] = $field_datum;
+        $fields[$name] = newField($name, $type, $default_value);
+    }
     return $fields;
 }

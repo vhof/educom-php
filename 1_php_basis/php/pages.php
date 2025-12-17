@@ -7,10 +7,14 @@ use lib\account;
 // Show Home page content
 //===================================
 function home(): void {
-    echo '
-        <h1>Home</h1>
-        <p>Welkomstekst!</p>
-    '; 
+    $user_name = account\getSignedUserName();
+    echo '<h1>Home</h1>'
+        .'<p>';
+    if (account\signedIn() && !\lib\isEmpty($user_name))
+        echo 'Welkom '.$user_name.'!';
+    else
+        echo 'Welkomstekst!'; 
+    echo '</p>';
 }
 
 //===================================
@@ -38,14 +42,17 @@ function contact(string $error_msg = ""): void {
 
     $field_keys = [NAME_KEY, EMAIL_KEY, MESSAGE_KEY];
 
+    $default_name = account\getSignedUserName();
+    $default_email = account\getSignedUserEmail();
+
     $field_data = [
-        [NAME_KEY   , form\TEXTFIELD_CALLABLE],
-        [EMAIL_KEY  , form\TEXTFIELD_CALLABLE],
-        [MESSAGE_KEY, form\AREAFIELD_CALLABLE],
+        [NAME_KEY   , form\TEXTFIELD_CALLABLE, $default_name    ],
+        [EMAIL_KEY  , form\TEXTFIELD_CALLABLE, $default_email   ],
+        [MESSAGE_KEY, form\AREAFIELD_CALLABLE                   ],
     ];
 
     $rules = [
-        form\newNonEmptyRule($field_keys),
+        form\newNonEmptyRule(...$field_keys),
         form\newEmailRule(EMAIL_KEY),
     ];
 
@@ -68,9 +75,9 @@ function signUp(string $error_msg = ""): void {
     ];
 
     $rules = [
-        form\newNonEmptyRule($field_keys),
+        form\newNonEmptyRule(EMAIL_KEY, PASSWORD_KEY, CONFIRM_PWD_KEY),
         form\newEmailRule(EMAIL_KEY),
-        form\newEqualityRule([PASSWORD_KEY, CONFIRM_PWD_KEY]),
+        form\newEqualityRule(PASSWORD_KEY, CONFIRM_PWD_KEY),
     ];
 
     formPage(Page::Signup, $field_data, $rules, \lib\displayName(Page::Signup->value), $error_msg);
@@ -90,7 +97,7 @@ function signIn(string $error_msg = ""): void {
     ];
 
     $rules = [
-        form\newNonEmptyRule($field_keys),
+        form\newNonEmptyRule(...$field_keys),
         form\newEmailRule(EMAIL_KEY),
     ];
 
@@ -101,8 +108,6 @@ function signOut(): void {
     \import(Library::Account);
 
     account\signOut();
-
-    // redirect to Home
 }
 
 function contactResponse(array &$form): void {
@@ -124,7 +129,7 @@ function signUpResponse(array &$form): void {
     if ($user) 
         signInResponse($form);
     else 
-        signUp("User already exists");
+        signUp("Email is already taken");
 }
 
 function signInResponse(array &$form): void {
@@ -141,7 +146,7 @@ function signInResponse(array &$form): void {
     elseif (!$sign_in)
         signIn("Sign in failed for unkown reason");
     else {
-        header("Location: ". htmlspecialchars($_SERVER["PHP_SELF"]."?page=".__HOME_PAGE__->value));
+        header("Location: ". htmlspecialchars($_SERVER["SCRIPT_NAME"]."?page=".__HOME_PAGE__->value));
         exit();
     }
 }

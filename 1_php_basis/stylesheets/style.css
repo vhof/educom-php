@@ -39,7 +39,7 @@ ul#nav a {
 }
 
 form {
-    display: inline-block
+    display: inline-block;
 }
 
 label {
@@ -63,4 +63,9 @@ form textarea {
 
 .error {
     color:darkred;
+    font-style: oblique;
+}
+
+#form_error {
+    text-align: center;
 }

@@ -15,7 +15,7 @@ function equalityRule(array $rule, array &$fields, string $curr_field_name): boo
     }, $applies_to))) == 1;
 }
 
-function newRule (string $callable, array|string $applies_to, array $error): array {
+function newRule (string $callable, array $applies_to, array $error): array {
     return [
         RULE_CALLABLE_KEY => $callable,
         APPLIES_TO_KEY => \is_array($applies_to) ? $applies_to : [$applies_to],
@@ -23,14 +23,14 @@ function newRule (string $callable, array|string $applies_to, array $error): arr
     ]; 
 }
 
-function newNonEmptyRule(array|string $applies_to): array {
+function newNonEmptyRule(string ...$applies_to): array {
     return newRule(NONEMPTY_RULE_CALLABLE, $applies_to, NONEMPTY_ERROR);
 }
 
-function newEmailRule(array|string $applies_to): array {
+function newEmailRule(string ...$applies_to): array {
     return newRule(EMAIL_RULE_CALLABLE, $applies_to, EMAIL_ERROR);
 }
 
-function newEqualityRule(array|string $applies_to): array {
+function newEqualityRule(string ...$applies_to): array {
     return newRule(EQUALITY_RULE_CALLABLE, $applies_to, EQUALITY_ERROR);
 }

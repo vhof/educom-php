@@ -22,7 +22,7 @@ function drawForm(array &$form): void {
     }
 
     if ($form[ERROR_MSG_KEY]) 
-        $result .= "<div id='form_error'>".$form[ERROR_MSG_KEY]."</div>";
+        $result .= "<div id='form_error' class='error'>".$form[ERROR_MSG_KEY]."</div>";
 
     $result .= "<input type='submit' id='submit_button' name='submit_button' value='".$form[SUBMIT_TEXT_KEY]."'>"
         ."</form></p>";

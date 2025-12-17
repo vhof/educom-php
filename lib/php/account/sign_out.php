@@ -1,6 +1,9 @@
 <?php namespace lib\account;
+use const lib\RETURN_PAGE_KEY;
 
 function signOut(): void {
+    $return_page = $_SESSION[RETURN_PAGE_KEY];
     session_unset();
-    session_destroy();
+    header("Location: ". htmlspecialchars($_SERVER["SCRIPT_NAME"]."?page=".$return_page));
+    exit();
 }

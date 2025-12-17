@@ -14,7 +14,7 @@
  */
 function loadForm(string $page_name, string $responseCallable, array $field_data, array $rules, string $submit_text, string $error_msg): void {
     $title = \lib\displayName($page_name);
-    $action_url = htmlspecialchars($_SERVER["PHP_SELF"]."?page=".$page_name);
+    $action_url = htmlspecialchars($_SERVER["SCRIPT_NAME"]."?page=".$page_name);
     $fields = newFields($field_data);
     $form = newForm($title, $fields, $rules, $action_url, $submit_text, $error_msg);
 
