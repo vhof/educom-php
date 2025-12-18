@@ -1,5 +1,7 @@
 <?php namespace _1_php_basis;
-defined("__ROOT__") || define("__ROOT__", $_SERVER["DOCUMENT_ROOT"]."/educom-php/1_php_basis");
+const LOCAL_ROOT = __ROOT__."/educom-php/1_php_basis";
+use const lib\PAGE_KEY;
+use const lib\account\SIGNOUT_KEY;
 
 enum Page: string {
     case Home = "home";
@@ -13,12 +15,41 @@ enum Page: string {
         return array_map(fn($p) => $p->value, self::cases());
     }
 
-    public static function sessionPages(): array {
-        return array_diff(self::values(), [Page::Signup->value, Page::Signin->value]);
+    public static function basePages(): array {
+        return [Page::Home, Page::About, Page::Contact];
     }
 
+    public static function sessionPages(): array {
+        return [...self::basePages(), Page::Signout];
+    }
+    
     public static function nonSessionPages(): array {
-        return array_diff(self::values(), [Page::Signout->value]);
+        return [...self::basePages(), Page::Signup, Page::Signin];
+    }
+
+    public static function getPages(array $page_enums): array {
+        return array_map(fn($page_enum) => [
+            \lib\NAME_KEY => $page_enum->value, 
+            \lib\PARAMS_KEY => $page_enum->getPageUrlParams()
+        ], $page_enums);
+    }
+
+    public static function getPageNames(array $page_enums): array {
+        return array_map(fn($page_enum) => $page_enum->value, $page_enums);
+    }
+
+    public function getPageUrlParams(): string {
+        return match ($this) {
+            Page::Signout
+                => http_build_query([
+                    PAGE_KEY => $_SESSION[PAGE_KEY] ?? "", 
+                    SIGNOUT_KEY => true
+                ]),
+            default
+                => http_build_query([
+                    PAGE_KEY => $this->value
+                ])
+        };
     }
 }
 

@@ -142,11 +142,10 @@ function signInResponse(array &$form): void {
     $sign_in = account\signIn($email, $pwd);
 
     if ($sign_in instanceof account\SignInError)
-        signIn($sign_in->value);
+        signIn($sign_in->getErrorMsg());
     elseif (!$sign_in)
         signIn("Sign in failed for unkown reason");
     else {
-        header("Location: ". htmlspecialchars($_SERVER["SCRIPT_NAME"]."?page=".__HOME_PAGE__->value));
-        exit();
+        loadPage(__HOME_PAGE__->value);
     }
 }

@@ -5,10 +5,12 @@
 //===================================
 function init(): void {
     \import(\Library::Account);
+
+    // Manage session
     session_start();
-    $page_name = \lib\getPage(__HOME_PAGE__->value, Page::values());
-    $page_names = \lib\account\signedIn() 
-        ? Page::sessionPages()
-        : Page::nonSessionPages();
-    \lib\loadPage($page_name, $page_names, __NAMESPACE__);
+    if (isset($_GET[\lib\account\SIGNOUT_KEY])) \lib\account\signOut();
+
+    // Load requested page
+    $page_name = getPageName();
+    loadPage($page_name);
 }

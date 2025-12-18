@@ -4,8 +4,8 @@ function openConnection(): mixed {
     return fopen(USER_FILE, "a+");
 }
 
-function closeConnection($file): void {
-    fclose($file);
+function closeConnection($file): bool {
+    return fclose($file);
 }
 
 function inSession(): bool {

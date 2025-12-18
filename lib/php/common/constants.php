@@ -1,4 +1,5 @@
 <?php namespace lib;
 
 const PAGE_KEY = "page";
-const RETURN_PAGE_KEY = "return_page";
+const NAME_KEY = "name";
+const PARAMS_KEY = "params";

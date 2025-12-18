@@ -42,14 +42,19 @@ function head(string $title): string {
     return $result;
 }
 
-//===================================
-// Show page navigation
-//===================================
-function navigation(array $page_names): string {
+/**
+ * Return page navigation HTML string
+ * @param string $base_url Base url to append to hostname
+ * @param array<array{
+ *      NAME_KEY: string,
+ *      PARAMS_KEY: string,
+ * }> $pages The names and desired url parameters of every page
+ * @return string
+ */
+function navigation(string $base_url, array $pages): string {
     $result = '<ul id="nav">';
-    foreach ($page_names as $page_name) {
-        $result .= '<a href="/educom-php/1_php_basis/?page='.$page_name.'"><li>'.strtoupper(displayName($page_name)).'</li></a>';
-    }
+    foreach ($pages as [NAME_KEY => $name, PARAMS_KEY => $params]) 
+        $result .= '<a href="'.$base_url.'?'.$params.'"><li>'.strtoupper(displayName($name)).'</li></a>';
     $result .= '</ul>';
     return $result;
 }

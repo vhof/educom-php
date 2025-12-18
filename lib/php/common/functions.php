@@ -52,16 +52,13 @@ function getPage(string $default_page_name, array $page_names): string {
 //===================================
 // Show page $page
 //===================================
-function loadPage(string $page_name, array $page_names, string $namespace): void {
-    $_SESSION[RETURN_PAGE_KEY] = $_SESSION[PAGE_KEY] ?? $page_name;
-    $_SESSION[PAGE_KEY] = $page_name;
-
+function loadPage(string $base_url, string $page_name, array $pages, string $namespace): void {
     echo browseHappy();
     echo '<html>';
     echo head($page_name);
     echo '<body>'; 
     echo browseHappyNotifier(); 
-    echo navigation($page_names); 
+    echo navigation($base_url, $pages); 
     $pageCallable = callableFromName($page_name, $namespace);
     $pageCallable();
     echo footer();
